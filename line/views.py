@@ -46,10 +46,14 @@ class LineReplyView(View):
             message = "Welcome"
         else:
             if event.message.text == '查詢':
-                
-                income = db.LineRecord.objects.filter(userId = user_id[0]['id'],recordType = 1).aggregate(Sum("recordCount"))
-                outlay = db.LineRecord.objects.filter(userId = user_id[0]['id'],recordType = 0).aggregate(Sum("recordCount"))
-                message = f"這個月的收入為 {income['recordCount__sum']} , 支出為 {outlay['recordCount__sum']} , 剩餘 {income['recordCount__sum']-outlay['recordCount__sum']}"
+                income = int(db.LineRecord.objects.filter(userId = user_id[0]['id'],recordType = 1).aggregate(Sum("recordCount"))['recordCount__sum'] or 0)
+                outlay = int(db.LineRecord.objects.filter(userId = user_id[0]['id'],recordType = 0).aggregate(Sum("recordCount"))['recordCount__sum'] or 0)
+                print(income)
+                print(outlay)
+
+                message = f"這個月的收入為 {income} , 支出為 {outlay} , 剩餘 {income-outlay}"
+
+
             else:
                 try:
                     if '收入' in event.message.text:
